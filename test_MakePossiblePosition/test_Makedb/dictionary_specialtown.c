@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-SpecialTown *dictionary_specialtown[NUMSPECIALTOWN];
-/*
+SpecialTown **dictionary_specialtown;
+
 void dictionary_specialtown_init(SpecialTown **dictionary_specialtown) {
 
 	int i;
@@ -18,7 +18,7 @@ void dictionary_specialtown_init(SpecialTown **dictionary_specialtown) {
 		// 配列の各要素のメモリが確保された
 			}
 }
-*/
+
 void delete_dictionary_specialtown(SpecialTown **dictionary_specialtown) {
 
 	int i;
@@ -29,20 +29,10 @@ void delete_dictionary_specialtown(SpecialTown **dictionary_specialtown) {
 
 }
 
-void put_data_of_specialtown_to_dictionary(void) {
+void put_data_of_specialtown_to_dictionary() {
 	
 	int i,j;
 	FILE *fp;
-
-	for(i=0; i<NUMSPECIALTOWN; i++) {
-
-		dictionary_specialtown[i] = malloc(sizeof(SpecialTown));
-		if(dictionary_specialtown[i] == NULL) {
-			printf("error, malloc, ds");
-		}
-		*(dictionary_specialtown[i]) = make_empty_specialtown();
-	}
-
 
 	char *fname = "data_specialtown.csv";
 	fp = fopen(fname, "r");
@@ -53,11 +43,12 @@ void put_data_of_specialtown_to_dictionary(void) {
 	printf("\n");
 
 	char building_name_buffer[3][100] = {"null", "null", "null"};
-	
+
+	dictionary_specialtown_init(dictionary_specialtown);
+
 	for(i=0; i<NUMSPECIALTOWN; i++) {
 
 		fscanf(fp, "%[^,],%[^,],%[^,],%[^,],%d\n", dictionary_specialtown[i]->ST_name, building_name_buffer[0], building_name_buffer[1], building_name_buffer[2], &dictionary_specialtown[i]->landprice_bonus_rate);
-	
 
 		for(j=0; j<3; j++) {
 			dictionary_specialtown[i]->trio_building_compose_specialtown[j] = search_building_from_dictionary(building_name_buffer[j]);
@@ -67,26 +58,21 @@ void put_data_of_specialtown_to_dictionary(void) {
 
 	for(i=0; i<NUMSPECIALTOWN; i++) {
 
-		printf("{%s, {", dictionary_specialtown[i]->ST_name);
+		printf("{%s, \n{", dictionary_specialtown[i]->ST_name);
 
 		for(j=0; j<3; j++) {
-			printf("%s,", dictionary_specialtown[i]->trio_building_compose_specialtown[j]->B_name);
+			printf(" %s,", dictionary_specialtown[i]->trio_building_compose_specialtown[j]->B_name);
 	}
 
-	printf("}, %d}\n", dictionary_specialtown[i]->landprice_bonus_rate);
+	printf("}, \n%d", dictionary_specialtown[i]->landprice_bonus_rate);
 
 	}
-	
-	printf("\n終わり\n");
-
 	fclose(fp);
 	
 }
 
  
 void search_specialtown_from_dictionary(LinkedList_SpecialTown *LinkedList_specialtown_regards_mainb, Building *mainb) {
-
-	printf("debug:: searchは呼び出されている");
 	int i=0, j=0;
 
 	for(i=0; i<NUMSPECIALTOWN; i++) {

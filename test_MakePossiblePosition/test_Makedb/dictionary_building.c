@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define NUMBUILDING 167 
 
 //Dictionary_Building dictionary_building[NUMBUILDING];
 
@@ -12,13 +13,8 @@ void put_data_of_building_to_dictionary(void) {
 	int i;
 	FILE *fp;
 
-	//dictionary_building = malloc(sizeof(Building)*NUMBUILDING);
 	for(i=0; i<NUMBUILDING; i++) {
 		dictionary_building[i] = malloc(sizeof(Building));
-		if(dictionary_building[i] == NULL) {
-			printf("error_db_%d", i);
-		}
-
 		*(dictionary_building[i]) = building_null();
 	}
 
@@ -42,13 +38,13 @@ void put_data_of_building_to_dictionary(void) {
 		dictionary_building[i]->B_width = return_pointer_to_length(building_length_buffer[1]);
 	
 	}
-	/*printf("dictionary_building[%d] = { \n\n", NUMBUILDING);
+	printf("dictionary_building[%d] = { \n\n", NUMBUILDING);
 
 	for(i=0; i<NUMBUILDING; i++) {
 
 		printf("{%s, %d, %d}\n", dictionary_building[i]->B_name, *(dictionary_building[i]->B_length), *(dictionary_building[i]->B_width));
 	}
-*/
+
 	printf("\n} \n");
 
 	/*while( (ret=fscanf(fp, "%lf,%lf,%lf", &data[0], &data[1], &data[2])) != EOF) {

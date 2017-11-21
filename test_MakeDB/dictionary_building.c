@@ -1,4 +1,5 @@
 #include "dictionary_building.h"
+#include "dictionary_specialtown.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -61,7 +62,8 @@ void put_data_of_building_to_dictionary(void) {
 }
 
 Building *search_building_from_dictionary(char B_name[]) {
-
+	
+	
 	int i=0;	
 	while(1) {
 		
@@ -69,7 +71,7 @@ Building *search_building_from_dictionary(char B_name[]) {
 			return NULL;
 		}
 
-		if(strcmp(B_name, dictionary_building[i]->B_name) == 0) {
+		if(mystrcmp(B_name, dictionary_building[i]->B_name) == 0) {
 			break;
 		}
 

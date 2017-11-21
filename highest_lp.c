@@ -7,10 +7,13 @@
 #define MAPLENGTH 30
 #define SPECIALTOWNSUM 150
 #define MAX_SPECIALTOWN_PER_BUILDING 20
+#define MAX_BUILDINGS_PER_DISTRICT 20
 //すべての配列はinitializeする
 //
 
 int cnt_district_pattern = 0;
+
+int cnt_posiible_point = 0;
 
 typedef struct {
 
@@ -75,6 +78,52 @@ typedef struct {
 	district_width = 0;
 */
 
+Point point_init(int s, int t) {
+	Point p;
+	p.x = s;
+	p.y = t;
+	return p;
+}
+
+Building building_init(char* name, Point point; int length; int width;) {
+	Building b;
+	strcpy(b.B_name, name);
+	b.left_bottom_point = point;
+	b.B_length = length;
+	b.B_width = width;
+
+	return b;
+}
+
+District district_init(void) {
+
+	District d;
+	
+	d.main = building_init("B_null", point_init(-1,-1), -1, -1);
+
+	for(i=0; i<MAX_BUILDINGS_PER_DISTRICT; i++) {
+		d.list_existed_building[i] = building_init("B_null", point_init(-1,-1), -1, -1);
+	}
+
+	d.cnt_existed_building = 0;
+	
+	for (i=0; i<MAPWIDTH; i++) {
+		for(j=0; j<MAPLENGTH; j++) {
+			d.district_map[i][j] = building_init("empty_cell", point_init(i,j), 1, 1);
+		}
+	}
+	for (i=0; i<MAX_SPECIALTOWN_PER_BUILDING; i++) {
+		d.DS_list_specialtown_regards_mainb[i] = specialtown_init("DS_null", "B_null", "B_null", "B_null", -1);
+	}
+
+	d.cnt_DS_list_specialtown_regards_mainb = 0;
+	d.district_length = 0;
+	d.district_width = 0;
+	
+	return d;
+}
+
+
 void initial_put(Building *B_main, District *D_district) {
 	
 	B_main->left_bottom_point.x = MAPWIDTH/2;
@@ -87,7 +136,7 @@ void initial_put(Building *B_main, District *D_district) {
 			D_district->district_map[B_main->left_bottom_point.x + i][B_main->left_bottom_point.y + j] = *B_main;
 		}
 	}
-
+	D_district->cnt_existed_building = 1;
 }
 
 int search_specialtown(Building *B_object, Dictionary_SpecialTown DS_list_specialtown[], Dictionary_SpecialTown list_specialtown_regards_mainb[]) {
@@ -114,6 +163,8 @@ void generate_specialtown(Building *B_main, Dictionary_SpecialTown list_specialt
 
 	District D_district, *p_D_district;
 	p_D_district = &D_district;
+
+	*p_D_district = district_init();
 
 	p_D_district->main = *B_main;
 
@@ -179,10 +230,10 @@ void generate_specialtown(Building *B_main, Dictionary_SpecialTown list_specialt
 	// 建築物の優先順位をつけてリストに入れた
 	
 
-int put_building_regards_mainb(Sum_Landprice_Bonus_Rate *p_R_list_ranked_building_regards_mainb, int cnt_list_ranked_building_regards_mainb, int head, District *D_district) {
+int put_building_regards_mainb(Sum_Landprice_Bonus_Rate *p_R_list_ranked_building_regards_mainb, int cnt_list_ranked_building_regards_mainb, int head, District *p_D_district) {
 
 	if(head == cnt_list_ranked_building_regards_mainb) {
-		print_district(D_district);
+		print_district(p_D_district);
 		cnt_district_pattern++;
 		return 0;
 	}
@@ -192,14 +243,17 @@ int put_building_regards_mainb(Sum_Landprice_Bonus_Rate *p_R_list_ranked_buildin
 
 	Building B_target, *p_B_target;
 	p_B_target = &B_target;
-	(p_R_list_ranked_building_regards_mainb + head)->B_instance = *p_B_target;
+
+	*p_B_target = building_init("B_null", point_init(-1,-1), -1, -1);
+
+	*p_B_target = (p_R_list_ranked_building_regards_mainb + head)->B_instance;
 	head++;
 
 	// 中心になる建物
 
 	Building B_central, *p_B_central;
 	p_B_central = &B_central;
-	*p_B_central = D_district->main;
+	*p_B_central = p_D_district->main;
 
 	Building B_make_specialtown_with_target_and_central[5];
 	
@@ -207,13 +261,13 @@ int put_building_regards_mainb(Sum_Landprice_Bonus_Rate *p_R_list_ranked_buildin
 
 	// targetとcentralの両方から専門街を作れる建築物をB_make_specialtown_with_target_and_centralに格納
 
-	for(i=0; i<(D_district->cnt_DS_list_specialtown_regards_mainb); i++) {
-		if(*p_B_target == D_district->DS_list_specialtown_regards_mainb[i].trio_building_compose_specialtown[1]) {
-			B_make_specialtown_with_target_and_central[cnt_B_make_specialtown_with_target_and_central] = D_district->DS_list_specialtown_regards_mainb.trio_building_compose_specialtown[2];
+	for(i=0; i<(p_D_district->cnt_DS_list_specialtown_regards_mainb); i++) {
+		if(*p_B_target == p_D_district->DS_list_specialtown_regards_mainb[i].trio_building_compose_specialtown[1]) {
+			B_make_specialtown_with_target_and_central[cnt_B_make_specialtown_with_target_and_central] = p_D_district->DS_list_specialtown_regards_mainb.trio_building_compose_specialtown[2];
 			cnt_B_make_specialtown_with_target_and_central++;
 		}
-		else if (*p_B_target == D_district->DS_list_specialtown_regards_mainb.trio_building_compose_specialtown[2]) {
-			make_specialtown_with_target_and_central[cnt_B_make_specialtown_with_target_and_central] = D_district->DS_list_specialtown_regards_mainb.trio_building_compose_specialtown[1];
+		else if (*p_B_target == p_D_district->DS_list_specialtown_regards_mainb.trio_building_compose_specialtown[2]) {
+			make_specialtown_with_target_and_central[cnt_B_make_specialtown_with_target_and_central] = p_D_district->DS_list_specialtown_regards_mainb.trio_building_compose_specialtown[1];
 			cnt_B_make_specialtown_with_target_and_central++;
 		}
 	}
@@ -229,8 +283,8 @@ int put_building_regards_mainb(Sum_Landprice_Bonus_Rate *p_R_list_ranked_buildin
 	// 街にすでに存在しているものを抽出（centralを含む）
 	for(i=0; i<cnt_B_make_specialtown_with_target_and_central; i++) {
 		for (j=0; j < cnt_of_already_existing_building; j++) {
-			if(B_make_specialtown_with_target_and_central[i] == D_district->list_existed_building[j]) {
-				B_list_to_put_target_optimizely[cnt_B_list_to_put_target_optimizely] = D_district->list_existed_building[j];
+			if(B_make_specialtown_with_target_and_central[i] == p_D_district->list_existed_building[j]) {
+				B_list_to_put_target_optimizely[cnt_B_list_to_put_target_optimizely] = p_D_district->list_existed_building[j];
 				cnt_B_list_to_put_target_optimizely++;
 			}
 		}
@@ -238,37 +292,77 @@ int put_building_regards_mainb(Sum_Landprice_Bonus_Rate *p_R_list_ranked_buildin
 	
 	
 	for (i=0; i<cnt_B_list_to_put_target_optimizely; i++) {
-		if (put_target(D_district, B_target, &B_list_to_put_target_optimizely[i]) == false) {
-			print_district(D_district);
+		
+		put_target(p_R_list_ranked_building_regards_mainb, cnt_list_ranked_building_regards_mainb, head, p_D_district, p_B_target, &B_list_to_put_target_optimizely[i]);
+		/*{
+			print_district(D_district); //ここが違う
 			cnt_district_pattern++;
 			return 0;
 		}
 	 //targetを配置
 		else {
 			put_building_regards_mainb(R_list_ranked_building_regards_mainb, cnt_list_ranked_building_regards_mainb, head, D_district); 
-		}
+		} */
 	}
 
 }
 
-bool put_target(District *D_district, Building *B_object, Building *B_target) {
+void put_target(Sum_Landprice_Bonus_Rate *p_R_list_ranked_building_regards_mainb, int cnt_list_ranked_building_regards_mainb, int head, District *p_D_district, Building *p_B_target, Building *p_B_object) { // targetが置く物件、objectが隣接させる物件
 
 
-	int cnt_target = sizeof(B_target[])/sizeof(Building);
+	int i,j,k;
 
-	int i,j;
-	int *cnt;
+	Point possible_point[50], *p_possible_point; // 置ける座標の候補を確認
+	p_possible_point = possible_point;
 
-	*cnt = 0;
+	for(i=0; i<50; i++) {
 
-	Point choice[];	// 置ける座標の候補を確認
+		*(p_possible_point + i) = point_init(-1, -1); //初期化
+	
+	}
 
-	for(i = 0; i < cnt_target; i++) {
-		int x_B_target = B_target[i]->left_bottom_point->x;
-		int y_B_target = B_target[i]->left_bottom_point->y;
+
 		
-		// 左側に接する場合
-		left_adjacent()
+	// 上下左右それぞれで接する場合
+	
+	left_adjacent(p_D_district, p_B_target, p_B_object, p_possible_point, cnt_possible_point);
+	right_adjacent(p_D_district, p_B_target, p_B_object, p_possible_point, cnt_possible_point);
+	top_adjacent(p_D_district, p_B_target, p_B_object, p_possible_point, cnt_possible_point);
+	bottom_adjacent(p_D_district, p_B_target, p_B_object, p_possible_point, cnt_possible_point);
+
+	if (cnt_possible_point != 0) {
+		
+		//==ならこの建築物は置けなかったので飛ばして終了
+	
+
+		for (i=0; i<cnt_possible_point; i++) {
+		
+			// District構造体のmapにtargetを置く
+			// 同じく、設置済みリストにtargetを入れて、cntを１増やす
+			// targetの構造体に位置情報を追加する
+		
+			p_B_target->left_bottom_point = *(p_possible_point + i);
+			p_D_district->list_existed_building[p_D_district->cnt_existed_building] = *p_B_target;
+			p_D_district->cnt_existed_building++;
+			for(j = *(p_possible_point + i).x; j < (*(p_possible_point + i).x + p_B_target->B_width); j++) {
+				for(k = *(p_possible_point + i).y; k < (*(p_possible_point + i).y + p_B_target->B_length); k++) {
+					p_D_district->district_map[i][j] = *p_B_target;
+				}
+			}
+		
+			put_building_regards_mainb(p_R_list_ranked_building_regards_mainb, cnt_list_ranked_building_regards_mainb, head, p_D_district);
+		}
+		//return true; // このtargetとobjectの組み合わせは全部試しました
+	}
+
+	else {
+		put_building_regards_mainb(p_R_list_ranked_building_regards_mainb, cnt_list_ranked_building_regards_mainb, head, p_D_district);
+	
+	}
+
+}
+
+void left_adjacent(District *p_D_district, Building *p_B_target, Building *p_B_object, Point *p_possible_point, int cnt_possible_point) {
 
 
 		for(j=(y_B_target+1_(B_target[i]->B_length)); j < (y_B_target+(B_target[i]->B_length)); j++) {

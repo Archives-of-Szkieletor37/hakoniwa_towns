@@ -7,6 +7,7 @@
 
 extern SpecialTown *dictionary_specialtown[NUMSPECIALTOWN];
 
+extern int mystrcmp(char *s1, char *s2);
 //extern void dictionary_specialtown_init(SpecialTown **dictionary_specialtown);
 
 //extern void delete_dictionary_specialtown(SpecialTown **dictionary_specialtown);
