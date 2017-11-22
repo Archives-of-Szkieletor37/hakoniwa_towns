@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define NUMBUILDING 167 
+//#define NUMBUILDING 162 
 
 //Dictionary_Building dictionary_building[NUMBUILDING];
 
