@@ -2,7 +2,7 @@
 #ifndef _DICTIONARY_BUILDING_H_
 #define _DICTIONARY_BUILDING_H_
 
-#define NUMBUILDING 167
+#define NUMBUILDING 162
 
 #include "building.h"
 
