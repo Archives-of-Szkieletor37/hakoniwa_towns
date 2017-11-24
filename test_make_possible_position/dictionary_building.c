@@ -13,6 +13,7 @@ void put_data_of_building_to_dictionary(void) {
 	int i;
 	FILE *fp;
 
+
 	for(i=0; i<NUMBUILDING; i++) {
 		dictionary_building[i] = malloc(sizeof(Building));
 		*(dictionary_building[i]) = building_null();
@@ -34,24 +35,31 @@ void put_data_of_building_to_dictionary(void) {
 
 		fscanf(fp, "%[^,],%d,%d\n", dictionary_building[i]->B_name, &building_length_buffer[0], &building_length_buffer[1]);
 		
-		dictionary_building[i]->B_length = return_pointer_to_length(building_length_buffer[0]);
-		dictionary_building[i]->B_width = return_pointer_to_length(building_length_buffer[1]);
-	
+		dictionary_building[i]->B_length = building_length_buffer[0];
+		dictionary_building[i]->B_width = building_length_buffer[1];
+		dictionary_building[i]->id = i;
+
+		if(building_length_buffer[0] == building_length_buffer[1]) {
+			dictionary_building[i]->B_rotate = &(flag_f);
+		}
+		else {
+			dictionary_building[i]->B_rotate = &(flag_t);
+		}	
 	}
 	printf("dictionary_building[%d] = { \n\n", NUMBUILDING);
 
 	for(i=0; i<NUMBUILDING; i++) {
 
-		printf("{%s, %d, %d}\n", dictionary_building[i]->B_name, *(dictionary_building[i]->B_length), *(dictionary_building[i]->B_width));
+		printf("{%s, %d, %d}\n", dictionary_building[i]->B_name, dictionary_building[i]->B_length, dictionary_building[i]->B_width);
 	}
 
 	printf("\n} \n");
 
-	/*while( (ret=fscanf(fp, "%lf,%lf,%lf", &data[0], &data[1], &data[2])) != EOF) {
-		printf("%lf %lf %lf\n", data[0], data[1], data[2]);
-	}
+/*	while( (ret=fscanf(fp, "%lf,%lf,%lf", &data[0], &data[1], &data[2])) != EOF) {
+	  printf("%lf %lf %lf\n", data[0], data[1], data[2]);
+	  }
 
-	printf("\n");*/
+	  printf("\n");*/
 	fclose(fp);
 
 }
@@ -81,4 +89,5 @@ Building *search_building_from_dictionary(char B_name[]) {
 
 	return b;
 }
+
 

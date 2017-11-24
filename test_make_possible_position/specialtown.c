@@ -13,11 +13,12 @@ SpecialTown make_empty_specialtown(void) {
 	
 	int i = 0;
 	
-	Building null = building_null();
+	Building b, *p_b = &b;
+	b = building_null();
 
 	for(i=0; i<3; i++) {	
 
-		empty_st.trio_building_compose_specialtown[i] = &null;
+		empty_st.trio_building_compose_specialtown[i] = p_b;
 	}
 
 	empty_st.landprice_bonus_rate = -1;

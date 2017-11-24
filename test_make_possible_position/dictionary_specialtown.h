@@ -15,6 +15,6 @@ extern int mystrcmp(char *s1, char *s2);
 extern void put_data_of_specialtown_to_dictionary(void);
 
 
-extern void search_specialtown_from_dictionary(LinkedList_SpecialTown *LinkedList_specialtown_regards_mainb, Building *mainb);
+extern void search_specialtown_from_dictionary(LinkedList_SpecialTown **LinkedList_specialtown_regards_mainb_ptr, Building *mainb);
 
 #endif // _DICTIONARY_SPECIALTOWN_H_

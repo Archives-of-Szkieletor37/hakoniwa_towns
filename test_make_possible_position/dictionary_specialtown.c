@@ -104,7 +104,7 @@ void put_data_of_specialtown_to_dictionary(void) {
 }
 
  
-void search_specialtown_from_dictionary(LinkedList_SpecialTown *LinkedList_specialtown_regards_mainb, Building *mainb) {
+void search_specialtown_from_dictionary(LinkedList_SpecialTown **LinkedList_specialtown_regards_mainb_ptr, Building *mainb) {
 
 	//printf("debug:: searchは呼び出されている\n");
 	int i=0, j=0;
@@ -115,7 +115,7 @@ void search_specialtown_from_dictionary(LinkedList_SpecialTown *LinkedList_speci
 
 			if(mystrcmp((dictionary_specialtown[i]->trio_building_compose_specialtown[j]->B_name), mainb->B_name) == 0) {
 			
-				push_LinkedList_specialtown(LinkedList_specialtown_regards_mainb, dictionary_specialtown[i]);// 連結リストに追加
+				push_LinkedList_specialtown(LinkedList_specialtown_regards_mainb_ptr, *(dictionary_specialtown[i]));// 連結リストに追加
 				cnt_specialtown_regards_mainb++;
 				break;
 			}
